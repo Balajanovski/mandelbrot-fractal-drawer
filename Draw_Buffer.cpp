@@ -6,6 +6,7 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include <iostream>
 
 // Util function to compile a shader from source
 void Draw_Buffer::compile_shader(GLuint &shader, const std::string &src) {
@@ -88,34 +89,12 @@ Draw_Buffer::Draw_Buffer(Window<int> *win, const std::string &vertex_shader_src,
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
-// Set shader attributes
-    GLint pos_attrib = glGetAttribLocation(shader_prog, "position");
-    glVertexAttribPointer(pos_attrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
-    glEnableVertexAttribArray(pos_attrib);
-
-    GLint tex_coord_attrib = glGetAttribLocation(shader_prog, "tex_coord");
-    glEnableVertexAttribArray(tex_coord_attrib);
-    glVertexAttribPointer(tex_coord_attrib, 2, GL_FLOAT, GL_FALSE,
-                        4 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
-
-// Generate texture
-    glGenTextures(1, &mandelbrot_tex);
-
-// Render pixels to image
-    glBindTexture(GL_TEXTURE_2D, mandelbrot_tex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, window->width(), window->height(), 0, GL_RGB, GL_FLOAT, &buffer[0]);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-// Draw a rectangle
+// Create vertex and element buffers
     const static GLfloat vertices[] = {
             // Position   Tex-coords
             -1.0f,  1.0f, 0.0f, 0.0f, // Top-left
-            1.0f,  1.0f, 1.0f, 0.0f, // Top-right
-            1.0f, -1.0f, 1.0f, 1.0f, // Bottom-right
+             1.0f,  1.0f, 1.0f, 0.0f, // Top-right
+             1.0f, -1.0f, 1.0f, 1.0f, // Bottom-right
             -1.0f, -1.0f, 0.0f, 1.0f  // Bottom-left
     };
 
@@ -135,6 +114,21 @@ Draw_Buffer::Draw_Buffer(Window<int> *win, const std::string &vertex_shader_src,
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
 
+// Set shader attributes
+    GLint pos_attrib = glGetAttribLocation(shader_prog, "position");
+    glVertexAttribPointer(pos_attrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+    glEnableVertexAttribArray(pos_attrib);
+
+    GLint tex_coord_attrib = glGetAttribLocation(shader_prog, "tex_coord");
+    glEnableVertexAttribArray(tex_coord_attrib);
+    glVertexAttribPointer(tex_coord_attrib, 2, GL_FLOAT, GL_FALSE,
+                        4 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
+
+// Generate texture
+    glGenTextures(1, &mandelbrot_tex);
+
+// Bind the texture information
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mandelbrot_tex);
     glUniform1i(glGetUniformLocation(shader_prog, "tex"), 0);
@@ -148,10 +142,32 @@ Draw_Buffer::~Draw_Buffer() {
 }
 
 void Draw_Buffer::flush() {
-    glBindVertexArray(vao);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // Reset texture
+    glBindTexture(GL_TEXTURE_2D, mandelbrot_tex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, window->width(), window->height(), 0, GL_RGB, GL_BYTE, &buffer[0]);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Draw rectangle
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+    // Sends message if there is an OpenGL bug
+    GLenum err = glGetError();
+    if (err) {
+        std::stringstream ss;
+        ss << "GL Error: " << err;
+        throw std::runtime_error(ss.str());
+    }
+
+    // Swap buffers
     glfwSwapBuffers(screen.get());
+
+    // Reset iterator
     pos_iter = buffer.begin();
 }
 
@@ -168,7 +184,7 @@ Draw_Buffer &operator<<(Draw_Buffer &db, const RGB &pixel) {
         return db;
     }
     else {
-        throw std::runtime_error("error: Cannot append past end of buffer : Remember to flush the buffer");
+        //throw std::runtime_error("error: Cannot append past end of buffer : Remember to flush the buffer");
         return db;
     }
 }

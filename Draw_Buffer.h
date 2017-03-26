@@ -12,9 +12,9 @@
 #include "Cleanup.h"
 
 struct RGB {
-    float r;
-    float g;
-    float b;
+    GLbyte r;
+    GLbyte g;
+    GLbyte b;
 };
 
 class Draw_Buffer {

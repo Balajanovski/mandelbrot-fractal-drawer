@@ -4,36 +4,38 @@
 #include "Window.h"
 #include "Draw_Buffer.h"
 
-static constexpr float COMPLEX_INCREMENT = 0.01f;
-static constexpr int MULTIPLICATION_FACTOR = 1000;
+static constexpr float COMPLEX_INCREMENT = 0.005f;
+static constexpr int MULTIPLICATION_FACTOR = 1;
 
-template <typename T>
-void mandelbrot(std::complex<T> &z, const std::complex<T> &c) {
-    z = (z * z) + c;
+template <unsigned factor, typename T>
+int iterations_till_escape(const std::complex<T> &c, int max_iterations) {
+    std::complex<T> z(0, 0);
+    for (int iter = 0; iter < max_iterations; ++iter) {
+        z = (z * z) + c;
+        if (std::abs(z) > 2 * factor) {
+            return iter;
+        }
+    }
+    return -1;
 }
 
 template <unsigned factor, typename T>
 RGB calculate_pixel(const std::complex<T> &c) {
-    std::complex<T> z(0, 0);
-    unsigned int counter = 0;
+    int iterations = iterations_till_escape<factor>(c, 255);
 
-    while (counter++ < 256 && !(std::abs(z) > 2 * factor)) {
-        mandelbrot(z, c);
-    }
-
-    if (counter < 256 && !(std::abs(z) > 2 * factor)) {
+    if (iterations == -1) {
         return RGB{0, 0, 0};
     }
 
     else {
-        float blue = 100 + counter % 155;
-        return RGB{94, 219, blue};
+        GLbyte blue = iterations * 8;
+        return RGB{0, 0, blue};
     }
 }
 
 int main() {
     // Declare window object to represent the complex plane
-    Window<int64_t> complex_plane(-2.0 * MULTIPLICATION_FACTOR, 1.0 * MULTIPLICATION_FACTOR, -1.0 * MULTIPLICATION_FACTOR, 1.0 * MULTIPLICATION_FACTOR);
+    Window<double> complex_plane(-2.2 * MULTIPLICATION_FACTOR, 1.2 * MULTIPLICATION_FACTOR, -1.7 * MULTIPLICATION_FACTOR, 1.7 * MULTIPLICATION_FACTOR);
 
     // Declare window object to represent the OpenGL window
     Window<int> gl_window(0, (std::abs(complex_plane.get_x_min()) + complex_plane.get_x_max()) / (COMPLEX_INCREMENT * MULTIPLICATION_FACTOR),
@@ -43,7 +45,7 @@ int main() {
     Draw_Buffer pixel_buffer(&gl_window, "vertex_shader.glsl", "fragment_shader.glsl");
 
     // Iterate through the complex plane, finding out what colour the pixels are
-    std::complex<int64_t> pixel_iterator(complex_plane.get_x_min(), complex_plane.get_y_max());
+    std::complex<double> pixel_iterator(complex_plane.get_x_min(), complex_plane.get_y_max());
     while (pixel_iterator.imag() > complex_plane.get_y_min()) {
         while (pixel_iterator.real() < complex_plane.get_x_max()) {
 
