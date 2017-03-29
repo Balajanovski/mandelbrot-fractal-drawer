@@ -38,7 +38,7 @@ Draw_Buffer::Draw_Buffer(Window<int> *win, const std::string &vertex_shader_src,
 
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-    screen.reset(glfwCreateWindow(win->width(), win->height(), "Mandelbrot Fractal", nullptr, nullptr));
+    screen = (glfwCreateWindow(win->width(), win->height(), "Mandelbrot Fractal", nullptr, nullptr));
 
     make_current();
 
@@ -57,8 +57,8 @@ Draw_Buffer::Draw_Buffer(Window<int> *win, const std::string &vertex_shader_src,
     glClear(GL_COLOR_BUFFER_BIT);
 
 // Generate shaders
-    GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
     GLint compile_status;
     compile_shader(vertex_shader, vertex_shader_src);
@@ -98,8 +98,6 @@ Draw_Buffer::Draw_Buffer(Window<int> *win, const std::string &vertex_shader_src,
             -1.0f, -1.0f, 0.0f, 1.0f  // Bottom-left
     };
 
-
-    GLuint vbo;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -109,7 +107,6 @@ Draw_Buffer::Draw_Buffer(Window<int> *win, const std::string &vertex_shader_src,
             2, 3, 0
     };
 
-    GLuint ebo;
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
@@ -136,8 +133,21 @@ Draw_Buffer::Draw_Buffer(Window<int> *win, const std::string &vertex_shader_src,
 
 Draw_Buffer::~Draw_Buffer() {
 
+// Unbind buffer
+    glBindVertexArray(NULL);
+
+// Delete shaders
+    glDeleteProgram(shader_prog);
+    glDeleteShader(vertex_shader);
+    glDeleteShader(frag_shader);
+
+// Delete buffers
+    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ebo);
+    glDeleteVertexArrays(1, &vao);
 
 // Terminate GLFW
+    glfwDestroyWindow(screen);
     glfwTerminate();
 }
 
@@ -165,14 +175,14 @@ void Draw_Buffer::flush() {
     }
 
     // Swap buffers
-    glfwSwapBuffers(screen.get());
+    glfwSwapBuffers(screen);
 
     // Reset iterator
     pos_iter = buffer.begin();
 }
 
 void Draw_Buffer::keep_window_open() {
-    while(!glfwWindowShouldClose(screen.get())) {
+    while(!glfwWindowShouldClose(screen)) {
         glfwPollEvents();
     }
 }

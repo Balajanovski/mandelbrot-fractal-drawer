@@ -13,7 +13,7 @@ endif()
 find_package(GLEW REQUIRED)
 find_package(OPENGL REQUIRED)
 
-set(SOURCE_FILES main.cpp main.cpp Draw_Buffer.cpp Draw_Buffer.h Window.h Cleanup.h Get_GL.h)
+set(SOURCE_FILES main.cpp Draw_Buffer.cpp Draw_Buffer.h Window.h Cleanup.h Get_GL.h)
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCE_FILES})
 include_directories(${GLFW_INCLUDE_DIR})
 include_directories(${GLEW_INCLUDE_DIR})

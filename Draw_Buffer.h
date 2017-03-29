@@ -19,9 +19,11 @@ struct RGB {
 
 class Draw_Buffer {
 friend Draw_Buffer &operator<<(Draw_Buffer &db, const RGB &pixel);
-    std::unique_ptr<Window<int>> window;
+    // Pointer to glfw screen
+    GLFWwindow *screen;
 
-    std::unique_ptr<GLFWwindow, Cleaner> screen;
+    // Represents OpenGL context dimensions
+    std::unique_ptr<Window<int>> window;
 
     // Pixel buffer
     std::vector<RGB> buffer;
@@ -35,8 +37,20 @@ friend Draw_Buffer &operator<<(Draw_Buffer &db, const RGB &pixel);
     // GLSL Shader program
     GLuint shader_prog;
 
+    // Vertex shader
+    GLuint vertex_shader;
+
+    // Fragment shader
+    GLuint frag_shader;
+
     // VAO
     GLuint vao;
+
+    // Element buffer object
+    GLuint ebo;
+
+    // Vertex buffer object
+    GLuint vbo;
 
     // Util function to compile shader
     static void compile_shader(GLuint &shader, const std::string &src);
@@ -45,7 +59,7 @@ public:
     ~Draw_Buffer();
 
     void make_current() {
-        glfwMakeContextCurrent(screen.get());
+        glfwMakeContextCurrent(screen);
     }
 
     void flush();
