@@ -12,12 +12,17 @@ endif()
 
 find_package(GLEW REQUIRED)
 find_package(OPENGL REQUIRED)
+find_package(PNG REQUIRED)
 
-set(SOURCE_FILES main.cpp Draw_Buffer.cpp Draw_Buffer.h Window.h Cleanup.h Get_GL.h)
+add_definitions(${PNG_DEFINITIONS})
+
+set(SOURCE_FILES main.cpp Draw_Buffer.cpp Draw_Buffer.h Window.h Cleanup.h Get_GL.h Buffer_Base.h Image_Buffer.cpp Image_Buffer.h RGB.h)
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCE_FILES})
 include_directories(${GLFW_INCLUDE_DIR})
 include_directories(${GLEW_INCLUDE_DIR})
 include_directories(${OPENGL_INCLUDE_DIR})
+include_directories(${PNG_INCLUDE_DIRS})
 target_link_libraries(${CMAKE_PROJECT_NAME} ${GLFW_LIBRARY}
                       ${GLEW_LIBRARY}
-                      ${OPENGL_LIBRARY})
+                      ${OPENGL_LIBRARY}
+                      ${PNG_LIBRARIES})

@@ -1,4 +1,5 @@
 #include "Draw_Buffer.h"
+#include "Buffer_Base.h"
 #include <memory>
 #include <algorithm>
 #include <stdexcept>
@@ -24,7 +25,7 @@ void Draw_Buffer::compile_shader(GLuint &shader, const std::string &src) {
 }
 
 Draw_Buffer::Draw_Buffer(Window<int> *win, const std::string &vertex_shader_src, const std::string &frag_shader_src) :
-        window(win), buffer(std::vector<RGB>(window->size())), pos_iter(buffer.begin()) {
+        Buffer_Base(win) {
 // Initialise GLFW
     if (!glfwInit()) {
         throw std::runtime_error("error: GLFW unable to initialise");
@@ -179,22 +180,8 @@ void Draw_Buffer::flush() {
 
     // Reset iterator
     pos_iter = buffer.begin();
-}
 
-void Draw_Buffer::keep_window_open() {
     while(!glfwWindowShouldClose(screen)) {
         glfwPollEvents();
-    }
-}
-
-Draw_Buffer &operator<<(Draw_Buffer &db, const RGB &pixel) {
-    if (db.pos_iter != db.buffer.end()) {
-        *(db.pos_iter) = pixel;
-        ++db.pos_iter;
-        return db;
-    }
-    else {
-        //throw std::runtime_error("error: Cannot append past end of buffer : Remember to flush the buffer");
-        return db;
     }
 }

@@ -8,28 +8,13 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Get_GL.h"
-#include "Window.h"
 #include "Cleanup.h"
+#include "Buffer_Base.h"
+#include "RGB.h"
 
-struct RGB {
-    GLbyte r;
-    GLbyte g;
-    GLbyte b;
-};
-
-class Draw_Buffer {
-friend Draw_Buffer &operator<<(Draw_Buffer &db, const RGB &pixel);
+class Draw_Buffer : public Buffer_Base<RGB> {
     // Pointer to glfw screen
     GLFWwindow *screen;
-
-    // Represents OpenGL context dimensions
-    std::unique_ptr<Window<int>> window;
-
-    // Pixel buffer
-    std::vector<RGB> buffer;
-
-    // Tracks position of appending in buffer
-    std::vector<RGB>::iterator pos_iter;
 
     // Texture where pixels are written to
     GLuint mandelbrot_tex;
@@ -56,18 +41,14 @@ friend Draw_Buffer &operator<<(Draw_Buffer &db, const RGB &pixel);
     static void compile_shader(GLuint &shader, const std::string &src);
 public:
     Draw_Buffer(Window<int> *, const std::string &, const std::string &);
-    ~Draw_Buffer();
+    virtual ~Draw_Buffer() override;
 
     void make_current() {
         glfwMakeContextCurrent(screen);
     }
 
-    void flush();
-
-    void keep_window_open();
+    virtual void flush() override;
 };
-
-Draw_Buffer &operator<<(Draw_Buffer &db, const RGB &pixel);
 
 
 #endif //MANDELBROT_FRACTAL_DRAWER_DRAW_BUFFER_H
