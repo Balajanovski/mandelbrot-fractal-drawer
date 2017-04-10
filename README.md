@@ -26,6 +26,7 @@ Type I if you want to draw to a PNG image, then type the name of the file you wa
 Enjoy!
 
 ## To Do:
-1. Multithreading
-2. Different colours
-3. Different image files (JPEG, GIF, etc...)
+1. Zoom functionality
+2. Multithreading
+3. Different colours
+4. Different image files (JPEG, GIF, etc...)
