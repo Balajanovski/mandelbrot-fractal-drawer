@@ -8,7 +8,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Get_GL.h"
-#include "Cleanup.h"
 #include "Buffer_Base.h"
 #include "RGB.h"
 
