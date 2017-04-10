@@ -16,7 +16,7 @@ find_package(PNG REQUIRED)
 
 add_definitions(${PNG_DEFINITIONS})
 
-set(SOURCE_FILES main.cpp Draw_Buffer.cpp Draw_Buffer.h Window.h Cleanup.h Get_GL.h Buffer_Base.h Image_Buffer.cpp Image_Buffer.h RGB.h)
+set(SOURCE_FILES main.cpp Draw_Buffer.cpp Draw_Buffer.h Window.h Get_GL.h Buffer_Base.h Image_Buffer.cpp Image_Buffer.h RGB.h)
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCE_FILES})
 include_directories(${GLFW_INCLUDE_DIR})
 include_directories(${GLEW_INCLUDE_DIR})
