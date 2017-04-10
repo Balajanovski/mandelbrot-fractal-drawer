@@ -10,7 +10,7 @@
 #include <iostream>
 
 // Util function to compile a shader from source
-void Draw_Buffer::compile_shader(GLuint &shader, const std::string &src) {
+static void Draw_Buffer::compile_shader(GLuint &shader, const std::string &src) {
     std::ifstream is(src);
     std::string code;
 
