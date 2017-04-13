@@ -8,6 +8,11 @@
 
 static constexpr float COMPLEX_INCREMENT = 0.005f;
 
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args&&... args) {
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+
 template <typename T>
 int iterations_till_escape(const std::complex<T> &c, int max_iterations) {
     std::complex<T> z(0, 0);
@@ -39,7 +44,7 @@ int main() {
     Window<float> complex_plane(-2.2, 1.2, -1.7, 1.7);
 
     // Declare window object to represent the OpenGL window
-    Window<int> window(0, ((std::abs(complex_plane.get_x_min()) + complex_plane.get_x_max()) / COMPLEX_INCREMENT),
+    auto window = make_unique<Window<int>>(0, ((std::abs(complex_plane.get_x_min()) + complex_plane.get_x_max()) / COMPLEX_INCREMENT),
                        0, ((std::abs(complex_plane.get_y_min()) + complex_plane.get_y_max()) / COMPLEX_INCREMENT));
 
     std::unique_ptr<Buffer_Base<RGB>> pixel_buffer;
@@ -53,7 +58,7 @@ int main() {
         ;
     if (response == 'W' || response == 'w') {
         // Initialise pointer to a draw buffer
-        pixel_buffer.reset(new Draw_Buffer(&window, "vertex_shader.glsl", "fragment_shader.glsl"));
+        pixel_buffer.reset(new Draw_Buffer(window, "vertex_shader.glsl", "fragment_shader.glsl"));
     }
 
     else if (response == 'I' || response == 'i') {
@@ -64,7 +69,7 @@ int main() {
             ;
 
         // Initialise pointer to an image buffer
-        pixel_buffer.reset(new Image_Buffer(&window, src));
+        pixel_buffer.reset(new Image_Buffer(window, src));
     }
 
     std::complex<float> pixel_iterator(complex_plane.get_x_min(), complex_plane.get_y_max());

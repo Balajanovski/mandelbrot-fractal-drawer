@@ -8,6 +8,7 @@
 #include "Get_GL.h"
 #include "Buffer_Base.h"
 #include "RGB.h"
+#include <memory>
 
 class Draw_Buffer : public Buffer_Base<RGB> {
     // Pointer to glfw screen
@@ -37,7 +38,7 @@ class Draw_Buffer : public Buffer_Base<RGB> {
     // Util function to compile shader
     static void compile_shader(GLuint &shader, const std::string &src);
 public:
-    Draw_Buffer(Window<int> *, const std::string &, const std::string &);
+    Draw_Buffer(std::unique_ptr<Window<int>> &, const std::string &, const std::string &);
     virtual ~Draw_Buffer() override;
 
     void make_current() {

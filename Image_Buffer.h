@@ -9,6 +9,7 @@
 #include "Buffer_Base.h"
 #include "RGB.h"
 #include <png.h>
+#include <memory>
 
 #define PNG_DEBUG 3
 
@@ -25,7 +26,7 @@ class Image_Buffer : public Buffer_Base<RGB> {
     // File pointer
     FILE *fp;
 public:
-    Image_Buffer(Window<int> *, const std::string &);
+    Image_Buffer(std::unique_ptr<Window<int>> &, const std::string &);
 
     ~Image_Buffer();
 

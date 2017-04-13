@@ -10,8 +10,9 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include <memory>
 
-Image_Buffer::Image_Buffer(Window<int> *win, const std::string &src) : Buffer_Base(win), file_src(src) { }
+Image_Buffer::Image_Buffer(std::unique_ptr<Window<int>> &win, const std::string &src) : Buffer_Base(win), file_src(src) { }
 
 void Image_Buffer::flush() {
     fp = fopen(file_src.c_str(), "wb");

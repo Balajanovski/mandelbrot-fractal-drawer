@@ -22,8 +22,8 @@ protected:
     // Represents the size of the window to which the buffer is writing
     std::unique_ptr<Window<int>> window;
 public:
-    Buffer_Base(Window<int> *win) :
-            buffer(win->size()), window(win) { pos_iter = buffer.begin(); }
+    Buffer_Base(std::unique_ptr<Window<int>> &win) :
+            buffer(win->size()), window(std::move(win)) { pos_iter = buffer.begin(); }
     virtual ~Buffer_Base() { };
     virtual void flush() = 0;
 
