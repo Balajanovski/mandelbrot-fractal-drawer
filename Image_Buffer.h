@@ -26,7 +26,7 @@ class Image_Buffer : public Buffer_Base<RGB> {
     // File pointer
     FILE *fp;
 public:
-    Image_Buffer(std::unique_ptr<Window<int>> &, const std::string &);
+    Image_Buffer(std::unique_ptr<Bounds2D<int>> &, const std::string &);
 
     ~Image_Buffer();
 

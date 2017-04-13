@@ -10,7 +10,7 @@
 #include "RGB.h"
 #include <memory>
 
-class Draw_Buffer : public Buffer_Base<RGB> {
+class Screen_Buffer : public Buffer_Base<RGB> {
     // Pointer to glfw screen
     GLFWwindow *screen;
 
@@ -38,8 +38,8 @@ class Draw_Buffer : public Buffer_Base<RGB> {
     // Util function to compile shader
     static void compile_shader(GLuint &shader, const std::string &src);
 public:
-    Draw_Buffer(std::unique_ptr<Window<int>> &, const std::string &, const std::string &);
-    virtual ~Draw_Buffer() override;
+    Screen_Buffer(std::unique_ptr<Bounds2D<int>> &, const std::string &, const std::string &);
+    virtual ~Screen_Buffer() override;
 
     void make_current() {
         glfwMakeContextCurrent(screen);

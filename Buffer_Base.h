@@ -8,7 +8,7 @@
 #include <vector>
 #include <memory>
 
-#include "Window.h"
+#include "Bounds2D.h"
 
 template <typename T>
 class Buffer_Base {
@@ -20,10 +20,10 @@ protected:
     typename std::vector<T>::iterator pos_iter;
 
     // Represents the size of the window to which the buffer is writing
-    std::unique_ptr<Window<int>> window;
+    std::unique_ptr<Bounds2D<int>> bounds;
 public:
-    Buffer_Base(std::unique_ptr<Window<int>> &win) :
-            buffer(win->size()), window(std::move(win)) { pos_iter = buffer.begin(); }
+    Buffer_Base(std::unique_ptr<Bounds2D<int>> &bnd) :
+            buffer(bnd->size()), bounds(std::move(bnd)) { pos_iter = buffer.begin(); }
     virtual ~Buffer_Base() { };
     virtual void flush() = 0;
 

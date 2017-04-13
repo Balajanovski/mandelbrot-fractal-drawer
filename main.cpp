@@ -1,8 +1,8 @@
 #include <complex>
 #include <iostream>
 #include <memory>
-#include "Window.h"
-#include "Draw_Buffer.h"
+#include "Bounds2D.h"
+#include "Screen_Buffer.h"
 #include "Image_Buffer.h"
 #include "Buffer_Base.h"
 
@@ -41,10 +41,10 @@ RGB calculate_pixel(const std::complex<T> &c) {
 
 int main() {
     // Declare window object to represent the complex plane
-    Window<float> complex_plane(-2.2, 1.2, -1.7, 1.7);
+    Bounds2D<float> complex_plane(-2.2, 1.2, -1.7, 1.7);
 
     // Declare window object to represent the OpenGL window
-    auto window = make_unique<Window<int>>(0, ((std::abs(complex_plane.get_x_min()) + complex_plane.get_x_max()) / COMPLEX_INCREMENT),
+    auto window = make_unique<Bounds2D<int>>(0, ((std::abs(complex_plane.get_x_min()) + complex_plane.get_x_max()) / COMPLEX_INCREMENT),
                        0, ((std::abs(complex_plane.get_y_min()) + complex_plane.get_y_max()) / COMPLEX_INCREMENT));
 
     std::unique_ptr<Buffer_Base<RGB>> pixel_buffer;
@@ -58,7 +58,7 @@ int main() {
         ;
     if (response == 'W' || response == 'w') {
         // Initialise pointer to a draw buffer
-        pixel_buffer.reset(new Draw_Buffer(window, "vertex_shader.glsl", "fragment_shader.glsl"));
+        pixel_buffer.reset(new Screen_Buffer(window, "vertex_shader.glsl", "fragment_shader.glsl"));
     }
 
     else if (response == 'I' || response == 'i') {
@@ -70,6 +70,11 @@ int main() {
 
         // Initialise pointer to an image buffer
         pixel_buffer.reset(new Image_Buffer(window, src));
+    }
+
+    else {
+        std::cout << "\nInvalid response: Shutting down" << std::endl;
+        exit(EXIT_FAILURE);
     }
 
     std::complex<float> pixel_iterator(complex_plane.get_x_min(), complex_plane.get_y_max());

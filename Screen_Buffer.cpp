@@ -1,4 +1,4 @@
-#include "Draw_Buffer.h"
+#include "Screen_Buffer.h"
 #include "Buffer_Base.h"
 #include <memory>
 #include <algorithm>
@@ -13,7 +13,7 @@
 #include <cassert>
 
 // Util function to compile a shader from source
-void Draw_Buffer::compile_shader(GLuint &shader, const std::string &src) {
+void Screen_Buffer::compile_shader(GLuint &shader, const std::string &src) {
     std::ifstream is(src);
     std::string code;
 
@@ -27,8 +27,8 @@ void Draw_Buffer::compile_shader(GLuint &shader, const std::string &src) {
     glCompileShader(shader);
 }
 
-Draw_Buffer::Draw_Buffer(std::unique_ptr<Window<int>> &win, const std::string &vertex_shader_src, const std::string &frag_shader_src) :
-                        Buffer_Base(win) {
+Screen_Buffer::Screen_Buffer(std::unique_ptr<Bounds2D<int>> &bnds, const std::string &vertex_shader_src, const std::string &frag_shader_src) :
+                        Buffer_Base(bnds) {
 // Initialise GLFW
     if (!glfwInit()) {
         throw std::runtime_error("error: GLFW unable to initialise");
@@ -42,7 +42,7 @@ Draw_Buffer::Draw_Buffer(std::unique_ptr<Window<int>> &win, const std::string &v
 
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-    screen = (glfwCreateWindow(window->width(), window->height(), "Mandelbrot Fractal", nullptr, nullptr));
+    screen = (glfwCreateWindow(bounds->width(), bounds->height(), "Mandelbrot Fractal", nullptr, nullptr));
 
     make_current();
 
@@ -203,7 +203,7 @@ Draw_Buffer::Draw_Buffer(std::unique_ptr<Window<int>> &win, const std::string &v
     assert(glGetError() != GL_NO_ERROR);
 }
 
-Draw_Buffer::~Draw_Buffer() {
+Screen_Buffer::~Screen_Buffer() {
 
 // Unbind buffer
     glBindVertexArray(0);
@@ -234,7 +234,7 @@ Draw_Buffer::~Draw_Buffer() {
     glfwTerminate();
 }
 
-void Draw_Buffer::flush() {
+void Screen_Buffer::flush() {
     glClear(GL_COLOR_BUFFER_BIT);
     assert(glGetError() != GL_NO_ERROR);
 
@@ -242,7 +242,7 @@ void Draw_Buffer::flush() {
     glBindTexture(GL_TEXTURE_2D, mandelbrot_tex);
     assert(glGetError() != GL_NO_ERROR);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, window->width(), window->height(), 0, GL_RGB, GL_BYTE, &buffer[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bounds->width(), bounds->height(), 0, GL_RGB, GL_BYTE, &buffer[0]);
     assert(glGetError() != GL_NO_ERROR);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

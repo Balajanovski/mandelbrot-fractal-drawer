@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <memory>
 
-Image_Buffer::Image_Buffer(std::unique_ptr<Window<int>> &win, const std::string &src) : Buffer_Base(win), file_src(src) { }
+Image_Buffer::Image_Buffer(std::unique_ptr<Bounds2D<int>> &bnds, const std::string &src) : Buffer_Base(bnds), file_src(src) { }
 
 void Image_Buffer::flush() {
     fp = fopen(file_src.c_str(), "wb");
@@ -40,7 +40,7 @@ void Image_Buffer::flush() {
     png_init_io(png_ptr, fp);
 
     // Write header (8 bit colour depth)
-    png_set_IHDR(png_ptr, info_ptr, window->width(), window->height(),
+    png_set_IHDR(png_ptr, info_ptr, bounds->width(), bounds->height(),
                  8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
                  PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 
@@ -52,15 +52,15 @@ void Image_Buffer::flush() {
 
     png_write_info(png_ptr, info_ptr);
 
-    std::vector<RGB> row(3 * window->width());
+    std::vector<RGB> row(3 * bounds->width());
     auto first = buffer.begin();
-    auto last = buffer.begin() + window->width();
+    auto last = buffer.begin() + bounds->width();
 
     while (first != buffer.end()) {
         std::copy(first, last, row.begin());
         png_write_row(png_ptr, (png_bytep)&row[0]);
         first = last;
-        last += window->width();
+        last += bounds->width();
     }
 
 
