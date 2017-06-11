@@ -10,6 +10,10 @@ It is pretty primitive when it comes to functionality, but it can render the ima
 * LibPNG
 * CMake
 
+## Disclaimer
+I have used Benhiller's opencl source code to accelerate my mandelbrot drawer from this project:
+https://github.com/benhiller/opencl-mandelbrot
+
 ## Installation guide
 If you've somehow come to the decision that you want to run this abomination of a program, please follow the steps below: <br>
 1. Download the dependencies listen above if you have not already
