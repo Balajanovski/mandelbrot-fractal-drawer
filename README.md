@@ -15,8 +15,8 @@ If you've somehow come to the decision that you want to run this abomination of 
 1. Download the dependencies listen above if you have not already
 2. Clone this repository by typing ` https://github.com/Balajanovski/tron-clone.git ` into the command line
 3. Enter the repository via command line
-4. Type cmake . {This generates a make file to build the program}
-5. Type make {This will build the executable}
+4. Type `cmake .` {This generates a make file to build the program}
+5. Type `make` {This will build the executable}
 6. Now just run the produced executable and enjoy
 
 ## Usage guide
