@@ -5,29 +5,34 @@
 #ifndef MANDELBROT_FRACTAL_DRAWER_BUFFER_BASE_H
 #define MANDELBROT_FRACTAL_DRAWER_BUFFER_BASE_H
 
-#include <vector>
+#include "OpenCL/cl.hpp"
 #include <memory>
+#include <vector>
 
 #include "Bounds2D.h"
+#include "RGB.h"
 
-template <typename T>
-class Buffer_Base {
+class Pixel_Stream_Base {
+friend class Pixel_Calculator;
+    // Stores the pixel data
+    std::vector<RGB> buffer;
 protected:
-    // The buffer itself
-    std::vector<T> buffer;
+    std::vector<RGB> &get_buffer() {
+        return buffer;
+    }
 
     // Iterator to where in the buffer the appending is happening
-    typename std::vector<T>::iterator pos_iter;
+    typename std::vector<RGB>::iterator pos_iter;
 
     // Represents the size of the window to which the buffer is writing
-    std::unique_ptr<Bounds2D<int>> bounds;
+    std::shared_ptr<Bounds2D<int>> bounds;
 public:
-    Buffer_Base(std::unique_ptr<Bounds2D<int>> &bnd) :
-            buffer(bnd->size()), bounds(std::move(bnd)) { pos_iter = buffer.begin(); }
-    virtual ~Buffer_Base() { };
+    Pixel_Stream_Base(std::shared_ptr<Bounds2D<int>> &bnd) :
+            buffer(bnd->size()), bounds(bnd) { pos_iter = buffer.begin(); }
+    virtual ~Pixel_Stream_Base() { };
     virtual void flush() = 0;
 
-    Buffer_Base<T> &operator<<(T &&val) {
+    Pixel_Stream_Base &operator<<(RGB &&val) {
         if (pos_iter != buffer.end()) {
             *(pos_iter) = std::move(val);
             ++pos_iter;

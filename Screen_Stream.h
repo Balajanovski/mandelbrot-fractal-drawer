@@ -6,11 +6,11 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Get_GL.h"
-#include "Buffer_Base.h"
+#include "Pixel_Stream_Base.h"
 #include "RGB.h"
 #include <memory>
 
-class Screen_Buffer : public Buffer_Base<RGB> {
+class Screen_Stream : public Pixel_Stream_Base {
     // Pointer to glfw screen
     GLFWwindow *screen;
 
@@ -38,8 +38,8 @@ class Screen_Buffer : public Buffer_Base<RGB> {
     // Util function to compile shader
     static void compile_shader(GLuint &shader, const std::string &src);
 public:
-    Screen_Buffer(std::unique_ptr<Bounds2D<int>> &, const std::string &, const std::string &);
-    virtual ~Screen_Buffer() override;
+    Screen_Stream(std::shared_ptr<Bounds2D<int>> &, const std::string &, const std::string &);
+    virtual ~Screen_Stream() override;
 
     void make_current() {
         glfwMakeContextCurrent(screen);

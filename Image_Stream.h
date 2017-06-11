@@ -6,14 +6,14 @@
 #define MANDELBROT_FRACTAL_DRAWER_IMAGE_BUFFER_H
 
 #include <string>
-#include "Buffer_Base.h"
+#include "Pixel_Stream_Base.h"
 #include "RGB.h"
 #include <png.h>
 #include <memory>
 
 #define PNG_DEBUG 3
 
-class Image_Buffer : public Buffer_Base<RGB> {
+class Image_Stream : public Pixel_Stream_Base {
     // Location to write image to
     std::string file_src;
 
@@ -26,9 +26,9 @@ class Image_Buffer : public Buffer_Base<RGB> {
     // File pointer
     FILE *fp;
 public:
-    Image_Buffer(std::unique_ptr<Bounds2D<int>> &, const std::string &);
+    Image_Stream(std::shared_ptr<Bounds2D<int>> &, const std::string &);
 
-    ~Image_Buffer();
+    ~Image_Stream();
 
     virtual void flush() override;
 };

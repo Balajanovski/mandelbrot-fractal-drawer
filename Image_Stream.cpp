@@ -2,7 +2,7 @@
 // Created by JULIA BALAJAN on 2/04/2017.
 //
 
-#include "Image_Buffer.h"
+#include "Image_Stream.h"
 #include <png.h>
 #include <fstream>
 #include <stdexcept>
@@ -12,9 +12,9 @@
 #include <algorithm>
 #include <memory>
 
-Image_Buffer::Image_Buffer(std::unique_ptr<Bounds2D<int>> &bnds, const std::string &src) : Buffer_Base(bnds), file_src(src) { }
+Image_Stream::Image_Stream(std::shared_ptr<Bounds2D<int>> &bnds, const std::string &src) : Pixel_Stream_Base(bnds), file_src(src) { }
 
-void Image_Buffer::flush() {
+void Image_Stream::flush() {
     fp = fopen(file_src.c_str(), "wb");
     if (!fp) {
         std::ostringstream ss;
@@ -53,10 +53,10 @@ void Image_Buffer::flush() {
     png_write_info(png_ptr, info_ptr);
 
     std::vector<RGB> row(3 * bounds->width());
-    auto first = buffer.begin();
-    auto last = buffer.begin() + bounds->width();
+    auto first = get_buffer().begin();
+    auto last = get_buffer().begin() + bounds->width();
 
-    while (first != buffer.end()) {
+    while (first != get_buffer().end()) {
         std::copy(first, last, row.begin());
         png_write_row(png_ptr, (png_bytep)&row[0]);
         first = last;
@@ -70,7 +70,7 @@ void Image_Buffer::flush() {
     png_init_io(png_ptr, fp);
 }
 
-Image_Buffer::~Image_Buffer() {
+Image_Stream::~Image_Stream() {
     if (fp) fclose(fp);
     if (info_ptr) png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
     if (png_ptr) png_destroy_write_struct(&png_ptr, static_cast<png_infopp>(NULL));

@@ -1,5 +1,5 @@
-#include "Screen_Buffer.h"
-#include "Buffer_Base.h"
+#include "Screen_Stream.h"
+#include "Pixel_Stream_Base.h"
 #include <memory>
 #include <algorithm>
 #include <stdexcept>
@@ -13,7 +13,7 @@
 #include <cassert>
 
 // Util function to compile a shader from source
-void Screen_Buffer::compile_shader(GLuint &shader, const std::string &src) {
+void Screen_Stream::compile_shader(GLuint &shader, const std::string &src) {
     std::ifstream is(src);
     std::string code;
 
@@ -27,8 +27,8 @@ void Screen_Buffer::compile_shader(GLuint &shader, const std::string &src) {
     glCompileShader(shader);
 }
 
-Screen_Buffer::Screen_Buffer(std::unique_ptr<Bounds2D<int>> &bnds, const std::string &vertex_shader_src, const std::string &frag_shader_src) :
-                        Buffer_Base(bnds) {
+Screen_Stream::Screen_Stream(std::shared_ptr<Bounds2D<int>> &bnds, const std::string &vertex_shader_src, const std::string &frag_shader_src) :
+                        Pixel_Stream_Base(bnds) {
 // Initialise GLFW
     if (!glfwInit()) {
         throw std::runtime_error("error: GLFW unable to initialise");
@@ -203,7 +203,7 @@ Screen_Buffer::Screen_Buffer(std::unique_ptr<Bounds2D<int>> &bnds, const std::st
     assert(glGetError() != GL_NO_ERROR);
 }
 
-Screen_Buffer::~Screen_Buffer() {
+Screen_Stream::~Screen_Stream() {
 
 // Unbind buffer
     glBindVertexArray(0);
@@ -234,7 +234,7 @@ Screen_Buffer::~Screen_Buffer() {
     glfwTerminate();
 }
 
-void Screen_Buffer::flush() {
+void Screen_Stream::flush() {
     glClear(GL_COLOR_BUFFER_BIT);
     assert(glGetError() != GL_NO_ERROR);
 
@@ -242,7 +242,7 @@ void Screen_Buffer::flush() {
     glBindTexture(GL_TEXTURE_2D, mandelbrot_tex);
     assert(glGetError() != GL_NO_ERROR);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bounds->width(), bounds->height(), 0, GL_RGB, GL_BYTE, &buffer[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bounds->width(), bounds->height(), 0, GL_RGB, GL_BYTE, &get_buffer()[0]);
     assert(glGetError() != GL_NO_ERROR);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -265,7 +265,7 @@ void Screen_Buffer::flush() {
     glfwSwapBuffers(screen);
 
     // Reset iterator
-    pos_iter = buffer.begin();
+    pos_iter = get_buffer().begin();
 
     while(!glfwWindowShouldClose(screen)) {
         glfwPollEvents();
