@@ -31,6 +31,5 @@ Enjoy!
 
 ## To Do:
 1. Zoom functionality
-2. Multithreading
 3. Different colours
 4. Different image files (JPEG, GIF, etc...)
