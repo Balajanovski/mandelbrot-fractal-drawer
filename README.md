@@ -10,10 +10,14 @@ It is pretty primitive when it comes to functionality, but it can render the ima
 * LibPNG
 * CMake
 
+## Disclaimer
+I have used Benhiller's opencl source code to accelerate my mandelbrot drawer from this project:
+https://github.com/benhiller/opencl-mandelbrot
+
 ## Installation guide
 If you've somehow come to the decision that you want to run this abomination of a program, please follow the steps below: <br>
 1. Download the dependencies listen above if you have not already
-2. Clone this repository by typing ` https://github.com/Balajanovski/tron-clone.git ` into the command line
+2. Clone this repository by typing ` https://github.com/Balajanovski/mandelbrot-fractal-drawer.git ` into the command line
 3. Enter the repository via command line
 4. Type `cmake .` {This generates a make file to build the program}
 5. Type `make` {This will build the executable}
@@ -27,6 +31,5 @@ Enjoy!
 
 ## To Do:
 1. Zoom functionality
-2. Multithreading
 3. Different colours
 4. Different image files (JPEG, GIF, etc...)
