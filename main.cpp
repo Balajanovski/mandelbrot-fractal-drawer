@@ -1,8 +1,9 @@
-//#define __CL_ENABLE_EXCEPTIONS
+#define __CL_ENABLE_EXCEPTIONS
 
 #include <complex>
 #include <iostream>
 #include <memory>
+#include <regex>
 
 #include "Bounds2D.h"
 #include "Screen_Stream.h"
@@ -10,34 +11,13 @@
 #include "Pixel_Stream_Base.h"
 #include "Pixel_Calculator.h"
 
-template <typename T>
-int iterations_till_escape(const std::complex<T> &c, int max_iterations) {
-    std::complex<T> z(0, 0);
-    for (int iter = 0; iter < max_iterations; ++iter) {
-        z = (z * z) + c;
-        if (std::abs(z) > 2) {
-            return iter;
-        }
-    }
-    return -1;
-}
-
-template <typename T>
-RGB calculate_pixel(const std::complex<T> &c) {
-    int iterations = iterations_till_escape(c, 255);
-
-    if (iterations == -1) {
-        return RGB{0, 0, 0};
-    }
-
-    else {
-        GLubyte blue = iterations * 5;
-        return RGB{0, 0, blue};
-    }
-}
+RGB retrieve_color(const std::regex&);
 
 int main() {
+    std::cout << "Running mandelbrot-fractal-drawer by Balajanovski..." << std::endl;
+
     // Declare window object to represent the complex plane
+    //Bounds2D<float> complex_plane(-2.2, 1.2, -1.7, 1.7);
     Bounds2D<float> complex_plane(-2.2, 1.2, -1.7, 1.7);
 
     // Declare window object to represent the OpenGL window
@@ -46,8 +26,24 @@ int main() {
 
     std::shared_ptr<Pixel_Stream_Base> pixel_buffer;
 
+    // Get the fractal colour
+    std::regex pattern("\\{[ ]*([0-9]{1,3})[ ]*,[ ]*([0-9]{1,3})[ ]*,[ ]*([0-9]{1,3})[ ]*\\}");
+    RGB chosen_color;
+    bool input_correct_rgb = false;
+    while (!input_correct_rgb) {
+        input_correct_rgb = true;
+        std::cout << "\nPlease enter the color you want the fractal to be drawn in RGB format: {R,G,B}.\nNumbers may be from 0 to 255" << std::endl;
 
-    std::cout << "Running mandelbrot-fractal-drawer...\nWould you like to draw fractal to a window or an image?\n"
+        try {
+            chosen_color = retrieve_color(pattern);
+        }
+        catch (std::runtime_error e) {
+            std::cout << e.what() << std::endl;
+            input_correct_rgb = false;
+        }
+    }
+
+    std::cout << "\nWould you like to draw fractal to a window or an image?\n"
               << "Type W for window or I for image" << std::endl;
 
     char response;
@@ -74,12 +70,36 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    Pixel_Calculator pixel_calculator("accelerated_calculation.cl", pixel_buffer);
+
+
+
+
+    Pixel_Calculator pixel_calculator("accelerated_calculation.cl", pixel_buffer, chosen_color);
     pixel_calculator.calculate();
 
     pixel_buffer->flush();
 
 
-    std::cout << "Closing down..." << std::endl;
+    std::cout << "\nClosing down..." << std::endl;
 
+}
+
+RGB retrieve_color(const std::regex& pattern) {
+        std::string input;
+
+        std::getline(std::cin, input);
+
+        std::smatch regex_results;
+
+        RGB processed_results;
+        if (std::regex_match(input, regex_results, pattern)) {
+            processed_results.r = static_cast<uint8_t>(std::stoi(regex_results[1].str()));
+            processed_results.g = static_cast<uint8_t>(std::stoi(regex_results[2].str()));
+            processed_results.b = static_cast<uint8_t>(std::stoi(regex_results[3].str()));
+        }
+        else {
+            throw std::runtime_error("error: invalid RGB sequence input");
+        }
+
+        return processed_results;
 }

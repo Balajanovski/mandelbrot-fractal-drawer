@@ -27,7 +27,7 @@ void Pixel_Calculator::compile_kernel(const char* src, const cl::Context& contex
     kernel = std::move(cl::Kernel(program, "render"));
 }
 
-Pixel_Calculator::Pixel_Calculator(const char *kernel_src, const std::shared_ptr<Pixel_Stream_Base> &stream) :
+Pixel_Calculator::Pixel_Calculator(const char *kernel_src, const std::shared_ptr<Pixel_Stream_Base> &stream, RGB color) :
 bound_stream(stream) {
 
     cl::Platform platform;
@@ -53,6 +53,11 @@ bound_stream(stream) {
     compile_kernel(kernel_src, context, kernel);
 
     kernel.setArg(0, cl_buffer);
+
+    // Create opencl buffer with previously created structure to notify the kernel what color the fractal
+    // will be drawn in
+    cl_color = cl::Buffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(color), (void*)&color);
+    kernel.setArg(1, cl_color);
 }
 
 void Pixel_Calculator::calculate() {

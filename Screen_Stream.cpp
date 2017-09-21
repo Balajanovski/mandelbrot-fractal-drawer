@@ -27,46 +27,11 @@ void Screen_Stream::compile_shader(GLuint &shader, const std::string &src) {
     glCompileShader(shader);
 }
 
-Screen_Stream::Screen_Stream(std::shared_ptr<Bounds2D<int>> &bnds, const std::string &vertex_shader_src, const std::string &frag_shader_src) :
-                        Pixel_Stream_Base(bnds) {
-// Initialise GLFW
-    if (!glfwInit()) {
-        throw std::runtime_error("error: GLFW unable to initialise");
-    }
 
-// Set up the window
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-    screen = (glfwCreateWindow(bounds->width(), bounds->height(), "Mandelbrot Fractal", nullptr, nullptr));
-
-    make_current();
-
-// Initialise glew
-    glewExperimental = GL_TRUE;
-    GLenum glewinit = glewInit();
-
-#ifndef NDEBUG
-    if (glewinit != GLEW_OK) {
-        std::ostringstream ss;
-        ss << "error: Glew unable to initialise" << glewinit;
-        throw std::runtime_error(ss.str());
-    }
-#endif
-    assert(glGetError() != GL_NO_ERROR);
-
-// Clear
-    glClearColor(0, 0, 0, 0);
-    assert(glGetError() != GL_NO_ERROR);
-
-    glClear(GL_COLOR_BUFFER_BIT);
-    assert(glGetError() != GL_NO_ERROR);
-
-// Generate shaders
+void Screen_Stream::generate_shaders(const std::string &vertex_shader_src, const std::string &frag_shader_src) {
+    // Generate shaders
     vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     assert(glGetError() != GL_NO_ERROR);
 
@@ -127,6 +92,50 @@ Screen_Stream::Screen_Stream(std::shared_ptr<Bounds2D<int>> &bnds, const std::st
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << info_log << std::endl;
     }
 #endif
+}
+
+
+
+Screen_Stream::Screen_Stream(std::shared_ptr<Bounds2D<int>> &bnds, const std::string &vertex_shader_src, const std::string &frag_shader_src) :
+                        Pixel_Stream_Base(bnds) {
+// Initialise GLFW
+    if (!glfwInit()) {
+        throw std::runtime_error("error: GLFW unable to initialise");
+    }
+
+// Set up the window
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+
+    screen = (glfwCreateWindow(bounds->width(), bounds->height(), "Mandelbrot Fractal", nullptr, nullptr));
+
+    make_current();
+
+// Initialise glew
+    glewExperimental = GL_TRUE;
+    GLenum glewinit = glewInit();
+
+#ifndef NDEBUG
+    if (glewinit != GLEW_OK) {
+        std::ostringstream ss;
+        ss << "error: Glew unable to initialise" << glewinit;
+        throw std::runtime_error(ss.str());
+    }
+#endif
+    assert(glGetError() != GL_NO_ERROR);
+
+// Clear buffer
+    glClearColor(0, 0, 0, 0);
+    assert(glGetError() != GL_NO_ERROR);
+
+    glClear(GL_COLOR_BUFFER_BIT);
+    assert(glGetError() != GL_NO_ERROR);
+
+    generate_shaders(vertex_shader_src, frag_shader_src);
 
 // Create VAO
     glGenVertexArrays(1, &vao);
@@ -203,6 +212,9 @@ Screen_Stream::Screen_Stream(std::shared_ptr<Bounds2D<int>> &bnds, const std::st
     assert(glGetError() != GL_NO_ERROR);
 }
 
+
+
+
 Screen_Stream::~Screen_Stream() {
 
 // Unbind buffer
@@ -233,6 +245,9 @@ Screen_Stream::~Screen_Stream() {
     glfwDestroyWindow(screen);
     glfwTerminate();
 }
+
+
+
 
 void Screen_Stream::flush() {
     glClear(GL_COLOR_BUFFER_BIT);

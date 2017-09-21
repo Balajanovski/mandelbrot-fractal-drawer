@@ -24,13 +24,15 @@ class Pixel_Calculator {
     void compile_kernel(const char* src, const cl::Context& context, cl::Kernel& kernel);
     cl::Buffer cl_buffer;
 
+    cl::Buffer cl_color;
+
     std::vector<cl::Device> devices;
 
     std::vector<cl::CommandQueue> queues;
 
     cl::Kernel kernel;
 public:
-    Pixel_Calculator(const char *, const std::shared_ptr<Pixel_Stream_Base> &);
+    Pixel_Calculator(const char *, const std::shared_ptr<Pixel_Stream_Base> &, const RGB);
 
     void calculate();
 };

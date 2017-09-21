@@ -16,7 +16,7 @@ float mapY(float y) {
   return y*2.5 - 1.25;
 }
 
-__kernel void render(__global char *out) {
+__kernel void render(__global char *out,  __global uchar *color) {
 
   // Set dimensions properly
   int x_dim = get_global_id(0);
@@ -51,9 +51,9 @@ __kernel void render(__global char *out) {
     out[idx + 2] = 0;
   } else {
     // This coordinate did escape, so color based on quickly it escaped
-    out[idx] = iteration - 1;
-    out[idx + 1] = iteration - 1;
-    out[idx + 2] = iteration - 1;
+    out[idx] = (iteration - 1) * color[0] / 255;
+    out[idx + 1] = (iteration - 1) * color[1] / 255;
+    out[idx + 2] = (iteration - 1) * color[2] / 255;
   }
 
 }

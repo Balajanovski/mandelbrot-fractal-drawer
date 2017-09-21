@@ -37,6 +37,8 @@ class Screen_Stream : public Pixel_Stream_Base {
 
     // Util function to compile shader
     static void compile_shader(GLuint &shader, const std::string &src);
+
+    void generate_shaders(const std::string&, const std::string&);
 public:
     Screen_Stream(std::shared_ptr<Bounds2D<int>> &, const std::string &, const std::string &);
     virtual ~Screen_Stream() override;
