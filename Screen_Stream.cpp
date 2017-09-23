@@ -107,8 +107,10 @@ Screen_Stream::Screen_Stream(std::shared_ptr<Bounds2D<int>> &bnds, const std::st
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     screen = (glfwCreateWindow(bounds->width(), bounds->height(), "Mandelbrot Fractal", nullptr, nullptr));

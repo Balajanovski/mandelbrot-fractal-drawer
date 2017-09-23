@@ -93,6 +93,15 @@ RGB retrieve_color(const std::regex& pattern) {
 
         RGB processed_results;
         if (std::regex_match(input, regex_results, pattern)) {
+
+            // Make sure input values are not greater than 255
+            if (std::stoi(regex_results[1].str()) > 255 ||
+                std::stoi(regex_results[2].str()) > 255 ||
+                std::stoi(regex_results[3].str()) > 255)
+            {
+                throw std::runtime_error("error: RGB values must be between 0 and 255");
+            }
+
             processed_results.r = static_cast<uint8_t>(std::stoi(regex_results[1].str()));
             processed_results.g = static_cast<uint8_t>(std::stoi(regex_results[2].str()));
             processed_results.b = static_cast<uint8_t>(std::stoi(regex_results[3].str()));
