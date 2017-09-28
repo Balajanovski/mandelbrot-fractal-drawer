@@ -21,14 +21,36 @@ void Pixel_Calculator::compile_kernel(const char* src, const cl::Context& contex
 
     cl::Program program(context, source);
 
-    program.build();
+    // Check for any errors in the building of the kernel
+    try {
+        program.build(devices);
+    }
+    catch (cl::Error& e) {
+        if (e.err() == CL_BUILD_PROGRAM_FAILURE) {
+            for (cl::Device dev : devices) {
+                // Check the build status
+                cl_build_status status = program.getBuildInfo<CL_PROGRAM_BUILD_STATUS>(dev);
+                if (status != CL_BUILD_ERROR)
+                    continue;
 
+                // Get the build log
+                std::string name = dev.getInfo<CL_DEVICE_NAME>();
+                std::string buildlog = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(dev);
+                std::cerr << "Build log for " << name << ":" << std::endl
+                          << buildlog << std::endl;
+            }
+        }
+        else {
+            throw e;
+        }
+    }
 
     kernel = std::move(cl::Kernel(program, "render"));
 }
 
-Pixel_Calculator::Pixel_Calculator(const char *kernel_src, const std::shared_ptr<Pixel_Stream_Base> &stream, RGB color) :
-bound_stream(stream) {
+Pixel_Calculator::Pixel_Calculator(const char *kernel_src, const std::shared_ptr<Pixel_Stream_Base> &stream, RGB color, const Bounds2D<float> &plane) :
+bound_stream(stream),
+complex_plane(plane) {
 
     cl::Platform platform;
     cl::Platform::get(&platform);
@@ -54,10 +76,18 @@ bound_stream(stream) {
 
     kernel.setArg(0, cl_buffer);
 
-    // Create opencl buffer with previously created structure to notify the kernel what color the fractal
-    // will be drawn in
+    // Notify kernel of the colour of the fractal
     cl_color = cl::Buffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(color), (void*)&color);
     kernel.setArg(1, cl_color);
+
+    // Create temporary array to notify the kernel of the complex plane's dimensions
+    float plane_array[] = {complex_plane.get_x_min(), complex_plane.get_x_max(),
+                         complex_plane.get_y_min(), complex_plane.get_y_max()};
+
+    // Notify kernel of the complex plane in which the fractal will be drawn
+    cl_plane = cl::Buffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
+                           sizeof(plane_array), (void*)&plane_array);
+    kernel.setArg(2, cl_plane);
 }
 
 void Pixel_Calculator::calculate() {
