@@ -32,5 +32,4 @@ Type I if you want to draw to a PNG image, then type the name of the file you wa
 Enjoy!
 
 ## To Do:
-1. Zoom functionality
-2. Different image files (JPEG, GIF, etc...)
+1. Different image files (JPEG, GIF, etc...)
