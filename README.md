@@ -26,11 +26,12 @@ If you've somehow come to the decision that you want to run this abomination of 
 ## Usage guide
 The program will ask you what colour you want the fractal to be drawn as.<br>
 Supply your colour in RGB format with the components being between 0 - 255 like this {R,G,B}. For example {255,255,255} is white.
+The program will ask you what range of complex numbers to derive the pixels from.
+Supply the range.
 The program will ask you if you want to draw to either a window or an image.<br>
 Type W if you want to draw to a window<br>
 Type I if you want to draw to a PNG image, then type the name of the file you want to generate and where you want to draw relative to the program<br>
 Enjoy!
 
 ## To Do:
-1. Zoom functionality
-2. Different image files (JPEG, GIF, etc...)
+1. Different image files (JPEG, GIF, etc...)
