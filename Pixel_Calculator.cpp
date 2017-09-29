@@ -91,11 +91,15 @@ complex_plane(plane) {
 }
 
 void Pixel_Calculator::calculate() {
-    size_t num_devices = devices.size();
+    int num_devices = devices.size();
     size_t width = bound_stream->bounds->width();
     size_t height = bound_stream->bounds->height();
 
-    assert(num_devices > 0);
+    // Check if any devices were detected
+    if (num_devices < 0) {
+        throw std::runtime_error("fatal error: no devices (GPUs) detected");
+    }
+
     size_t device_work_size[2] = {width, height / num_devices};
 
     for(int i = 0; i < num_devices; ++i) {

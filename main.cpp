@@ -49,7 +49,7 @@ int main() {
     std::tuple<float, float, float, float> chosen_range;
     while (true) {
         std::cout << "\nPlease enter the range of complex numbers within which you want the fractal to " <<
-                  "be drawn. Suggested input: (-2, 3.25, -1.25, 2.5)" << std::endl;
+                  "be drawn (real_min, real_max, imag_min, imag_max).\nSuggested input: (-2, 3.25, -1.25, 2.5)" << std::endl;
         try {
             chosen_range = retrieve_draw_pos(retrieve_complex_pos_pattern);
         }
@@ -162,6 +162,22 @@ std::tuple<float,
     }
     else {
         throw std::runtime_error("error: invalid complex plane input");
+    }
+
+    // If the x_min is greater than the x_max and y_min is greater than the y_max
+    if (std::get<0>(processed_results) > std::get<1>(processed_results)
+        && std::get<2>(processed_results) > std::get<3>(processed_results)) {
+        throw std::runtime_error("error: x_min cannot be larger than x_max and y_min cannot be larger than y_max");
+    }
+
+    // If the x_min is greater than the x_max
+    else if (std::get<0>(processed_results) > std::get<1>(processed_results)) {
+        throw std::runtime_error("error: x_min cannot be larger than x_max");
+    }
+
+    // If the y_min is greater than the y_max
+    else if (std::get<2>(processed_results) > std::get<3>(processed_results)) {
+        throw std::runtime_error("error: y_min cannot be larger than y_max");
     }
 
     return processed_results;
