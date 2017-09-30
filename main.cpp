@@ -19,6 +19,12 @@ std::tuple<float,
            float,
            float> retrieve_draw_pos(const std::regex&);
 
+// Set stream to image mode
+void initiate_png_mode(std::shared_ptr<Pixel_Stream_Base>&, std::shared_ptr<Bounds2D<int>>&);
+
+// Set stream to opengl mode
+void initiate_opengl_mode(std::shared_ptr<Pixel_Stream_Base>&, std::shared_ptr<Bounds2D<int>>&);
+
 int main() {
     std::cout << "Running mandelbrot-fractal-drawer by Balajanovski..." << std::endl;
 
@@ -72,36 +78,52 @@ int main() {
     // Declare window object to represent the OpenGL window
     auto window = std::make_shared<Bounds2D<int>>(0, 1000, 0, 1000);
 
-    std::cout << "\nWould you like to draw fractal to a window or an image?\n"
-              << "Type W for window or I for image" << std::endl;
-
     // Create a pointer to a generic pixel buffer
     // To exploit polymorphic behavior
     std::shared_ptr<Pixel_Stream_Base> pixel_buffer;
 
+
+    // Use preprocessor macros to ensure that the program still runs if the user has one of the
+    // libraries but not another
+#if defined(GLEW_FOUND) && defined(PNG_FOUND)
+    std::cout << "\nWould you like to draw fractal to a window or an image?\n"
+              << "Type W for window or I for image" << std::endl;
+
     char response;
     while (!(std::cin >> response))
         ;
-    if (response == 'W' || response == 'w') {
-        // Initialise pointer to a draw buffer
-        pixel_buffer.reset(new Screen_Stream(window, "vertex_shader.glsl", "fragment_shader.glsl"));
+
+    switch (response) {
+        case 'W' : case 'w' :
+        {
+            initiate_opengl_mode(pixel_buffer, window);
+        }
+        break;
+
+        case 'I' : case 'i' :
+        {
+            initiate_png_mode(pixel_buffer, window);
+        }
+        break;
+
+        default:
+        {
+            std::cout << "\nInvalid response: Shutting down" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        break;
     }
 
-    else if (response == 'I' || response == 'i') {
-        std::cout << "\nPlease enter the location to where you want the fractal to be drawn" << std::endl;
-
-        std::string src;
-        while (!(std::cin >> src))
-            ;
-
-        // Initialise pointer to an image buffer
-        pixel_buffer.reset(new Image_Stream(window, src));
-    }
-
-    else {
-        std::cout << "\nInvalid response: Shutting down" << std::endl;
-        exit(EXIT_FAILURE);
-    }
+#elif defined(GLEW_FOUND)
+    std::cout << "\nwarning: libPNG not detected\nInitiating GLEW (Windowed) mode" << std::endl;
+    initiate_opengl_mode(pixel_buffer, window);
+#elif defined(PNG_FOUND)
+    std::cout << "\nwarning: GLEW not detected\nInitiating libPNG (Image) mode" << std::endl;
+    initiate_png_mode(pixel_buffer, window);
+#else
+    std::cout << "\nfatal error: neither GLEW or libPNG were detected\nClosing down..." << std::endl;
+    exit(EXIT_FAILURE);
+#endif
 
     // Create a pixel calculator to use the GPU to accelerate the calculation
     Pixel_Calculator pixel_calculator("accelerated_calculation.cl", pixel_buffer, chosen_color, complex_plane);
@@ -181,4 +203,24 @@ std::tuple<float,
     }
 
     return processed_results;
+}
+
+// Set stream to image mode
+void initiate_png_mode(std::shared_ptr<Pixel_Stream_Base>& pixel_buffer,
+                       std::shared_ptr<Bounds2D<int>>& window) {
+    std::cout << "\nPlease enter the location to where you want the fractal to be drawn" << std::endl;
+
+    std::string src;
+    while (!(std::cin >> src))
+        ;
+
+    // Initialise pointer to an image buffer
+    pixel_buffer.reset(new Image_Stream(window, src));
+}
+
+// Set stream to opengl mode
+void initiate_opengl_mode(std::shared_ptr<Pixel_Stream_Base>& pixel_buffer,
+                          std::shared_ptr<Bounds2D<int>>& window) {
+    // Initialise pointer to a draw buffer
+    pixel_buffer.reset(new Screen_Stream(window, "vertex_shader.glsl", "fragment_shader.glsl"));
 }
