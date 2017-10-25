@@ -10,13 +10,13 @@ if(GLFW_FOUND AND (GLFW_VERSION VERSION_EQUAL 3.0 OR GLFW_VERSION VERSION_GREATE
     add_definitions( -DGLFW_VERSION_3 )
 endif()
 
-find_package(GLEW REQUIRED)
+find_package(GLEW)
 if (GLEW_FOUND)
     add_definitions( -DGLEW_FOUND )
 endif()
 
 find_package(OPENGL REQUIRED)
-find_package(PNG REQUIRED)
+find_package(PNG)
 if (PNG_FOUND)
     add_definitions( -DPNG_FOUND )
 endif()
