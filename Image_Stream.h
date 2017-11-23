@@ -1,5 +1,5 @@
 //
-// Created by JULIA BALAJAN on 2/04/2017.
+// Created by Balajanovski on 2/04/2017.
 //
 
 #ifndef MANDELBROT_FRACTAL_DRAWER_IMAGE_BUFFER_H
