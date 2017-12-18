@@ -1,5 +1,5 @@
 //
-// Created by JULIA BALAJAN on 2/04/2017.
+// Created by Balajanovski on 2/04/2017.
 //
 
 #include "Image_Stream.h"
