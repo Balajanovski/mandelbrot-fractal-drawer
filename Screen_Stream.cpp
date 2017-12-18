@@ -9,7 +9,7 @@
 #include <string>
 #include <iostream>
 
-//#define NDEBUG
+#define NDEBUG
 #include <cassert>
 
 // Util function to compile a shader from source
