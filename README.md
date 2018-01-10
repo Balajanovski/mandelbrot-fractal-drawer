@@ -1,18 +1,11 @@
 # mandelbrot-fractal-drawer
-My first implementation of a program to render the mandelbrot fractal.
-It is pretty primitive when it comes to functionality, but it can render the image to an OpenGL context or an image.
-
-[![fractal.png](https://s10.postimg.org/r6mpm6ks9/fractal.png)](https://postimg.org/image/jdw1u7et1/)
+[![Screen_Shot_2018-01-11_at_10.30.52_AM.png](https://s18.postimg.org/tz3xdeodl/Screen_Shot_2018-01-11_at_10.30.52_AM.png)](https://postimg.org/image/6kvy1h6g5/)
 
 ## Dependencies
 * OpenGL 
 * GLFW
 * LibPNG
 * CMake
-
-## Disclaimer
-I have used Benhiller's opencl source code to accelerate my mandelbrot drawer from this project:
-https://github.com/benhiller/opencl-mandelbrot
 
 ## Installation guide
 If you've somehow come to the decision that you want to run this abomination of a program, please follow the steps below: <br>
@@ -32,6 +25,3 @@ The program will ask you if you want to draw to either a window or an image.<br>
 Type W if you want to draw to a window<br>
 Type I if you want to draw to a PNG image, then type the name of the file you want to generate and where you want to draw relative to the program<br>
 Enjoy!
-
-## To Do:
-1. Different image files (JPEG, GIF, etc...)
