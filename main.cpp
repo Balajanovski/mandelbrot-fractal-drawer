@@ -85,7 +85,7 @@ int main() {
 
     // Use preprocessor macros to ensure that the program still runs if the user has one of the
     // libraries but not another
-#if defined(GLEW_FOUND) && defined(PNG_FOUND)
+#if defined(GLEW_FOUND) && defined(PNG_FOUND) && defined(GLFW_FOUND) && defined(OPENGL_FOUND)
     std::cout << "\nWould you like to draw fractal to a window or an image?\n"
               << "Type W for window or I for image" << std::endl;
 
@@ -114,7 +114,7 @@ int main() {
         break;
     }
 
-#elif defined(GLEW_FOUND)
+#elif defined(GLEW_FOUND) && defined(GLFW_FOUND) && defined(OPENGL_FOUND)
     std::cout << "\nwarning: libPNG not detected\nInitiating GLEW (Windowed) mode" << std::endl;
     initiate_opengl_mode(pixel_buffer, window);
 #elif defined(PNG_FOUND)

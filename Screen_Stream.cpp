@@ -285,6 +285,9 @@ void Screen_Stream::flush() {
     pos_iter = get_buffer().begin();
 
     while(!glfwWindowShouldClose(screen)) {
+        if ((glfwGetKey(screen, GLFW_KEY_ESCAPE) == GLFW_PRESS) || (glfwGetKey(screen, GLFW_KEY_ESCAPE) == GLFW_REPEAT)) {
+            glfwSetWindowShouldClose(screen, true);
+        }
         glfwPollEvents();
     }
 }
