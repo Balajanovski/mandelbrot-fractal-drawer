@@ -1,5 +1,5 @@
 # mandelbrot-fractal-drawer
-[![Screen_Shot_2018-01-11_at_10.30.52_AM.png](https://s18.postimg.org/tz3xdeodl/Screen_Shot_2018-01-11_at_10.30.52_AM.png)](https://postimg.org/image/6kvy1h6g5/)
+![Screenshot 1 of Gameplay](https://raw.githubusercontent.com/Balajanovski/mandelbrot-fractal-drawer/master/screenshot.png)<br>
 
 ## Dependencies
 * OpenGL 
